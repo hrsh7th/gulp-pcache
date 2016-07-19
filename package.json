@@ -1,0 +1,33 @@
+{
+  "name": "gulp-pcache",
+  "version": "1.0.0",
+  "description": "gulp incremental build on each process.",
+  "main": "index.js",
+  "dependencies": {
+    "lodash.defaults": "^4.0.1",
+    "through2": "^2.0.1"
+  },
+  "devDependencies": {
+    "gulp-util": "^3.0.7",
+    "mocha": "^2.5.3",
+    "vinyl": "^1.1.1"
+  },
+  "scripts": {
+    "test": "mocha test; exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hrsh7th/gulp-pcache.git"
+  },
+  "keywords": [
+    "gulpplugin",
+    "cache",
+    "disk"
+  ],
+  "author": "hrsh7th",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hrsh7th/gulp-pcache/issues"
+  },
+  "homepage": "https://github.com/hrsh7th/gulp-pcache#readme"
+}
