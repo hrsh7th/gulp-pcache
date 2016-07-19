@@ -17,7 +17,7 @@ describe('gulp-pcache', function() {
   it('should check cache hit/miss.', function(done) {
     const count = {value: 0};
 
-    const stream = pcache();
+    const stream = pcache('test1');
 
     stream.on('data', function(f) {
       // assert path.
@@ -52,7 +52,7 @@ describe('gulp-pcache', function() {
   });
 
   it('should create cache file.', function(done) {
-    const stream = pcache();
+    const stream = pcache('test2');
 
     stream.on('data', function() {});
     stream.on('end', function() {

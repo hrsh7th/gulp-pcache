@@ -18,7 +18,9 @@ module.exports = function (opts) {
   return pcache;
 };
 
-function pcache() {
+function pcache(name) {
+  caches[name] = caches[name] || {};
+
   return through.obj(function(file, enc, callback) {
 
     // skip if stream.
@@ -27,14 +29,15 @@ function pcache() {
       return callback();
     }
 
+
     // hit!.
     const hash = crypto.createHash('md5').update(file.contents.toString('utf8')).digest('hex');
-    if (caches[file.path] === hash) {
+    if (caches[name][file.path] === hash) {
       return callback();
     }
 
     // miss!
-    caches[file.path] = hash;
+    caches[name][file.path] = hash;
 
     this.push(file);
 
