@@ -54,9 +54,11 @@ pcache.clear = function() {
     caches = {};
     fs.unlinkSync(option.path);
   } catch(e) {}
+  return Promise.resolve();
 };
 
 pcache.save = function() {
   fs.writeFileSync(option.path, JSON.stringify(caches));
+  return Promise.resolve();
 };
 

@@ -70,5 +70,32 @@ describe('gulp-pcache', function() {
     stream.end();
   });
 
+  it('should separate checking cache by taskname.', function(done) {
+    const stream1 = pcache('test1');
+    const stream2 = pcache('test2');
+
+    const count = {value1: 0, value2: 0};
+    stream1.on('data', function() {
+      count.value1++;
+    });
+    stream1.on('end', function() {
+      assert(count.value1 === 2);
+      stream2.write(fileA);
+      stream2.write(fileB);
+      stream2.end();
+    });
+    stream2.on('data', function() {
+      count.value2++;
+    });
+    stream2.on('end', function() {
+      assert(count.value2 === 2);
+      done();
+    });
+
+    stream1.write(fileA);
+    stream1.write(fileB);
+    stream1.end();
+  });
+
 });
 

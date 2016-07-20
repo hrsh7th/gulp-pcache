@@ -5,12 +5,13 @@ gulp incremental build on each process.
 ```js
 const gulp = require('gulp');
 const eslint = require('gulp-eslint');
-const pcache = require('pcache')({path: __dirname + '/.gulpcache'});
+const concat = require('gulp-concat');
+const pcache = require('gulp-pcache')({path: __dirname + '/.gulpcache'});
 
 // only passthrough modified files.
-gulp.task('eslint', function() {
+gulp.task('scripts:eslint', function() {
   return gulp.src('**/*.js')
-    .pipe(pcache())
+    .pipe(pcache('scripts:eslint'))
     .pipe(eslint());
 });
 
@@ -18,15 +19,14 @@ gulp.task('eslint', function() {
 // and remember stream.
 gulp.task('scripts:concat', function() {
   return gulp.src('**/*.js')
-    .pipe(pcache())
-    .pipe(remember('webpack'))
+    .pipe(pcache('scripts:concat'))
+    .pipe(remember('scripts:concat'))
     .pipe(concat())
     .pipe(gulp.dest('bundle.js'));
 });
 
-gulp.task('cache:clear', function(done) {
+gulp.task('cache:clear', function() {
   pcache.clear();
-  done();
 });
 
 // auto save cache.
