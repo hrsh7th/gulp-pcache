@@ -6,7 +6,11 @@ const through = require('through2');
 var caches;
 var option;
 
-module.exports = function (opts) {
+/**
+ * @param {String} opts.path
+ * @return {Function}
+ */
+module.exports = function(opts) {
   option = defaults(opts || {}, {path: '.gulpcache'});
 
   try {
@@ -18,9 +22,18 @@ module.exports = function (opts) {
   return pcache;
 };
 
-function pcache(name) {
+/**
+ * @param {String} name
+ * @param {Object} opts
+ * @return {Stream}
+ */
+function pcache(name, opts) {
+  opts = defaults(opts || {},  {}, {deps: []});
+
+  // create cache space for task.
   caches[name] = caches[name] || {};
 
+  // return Strema.
   return through.obj(function(file, enc, callback) {
 
     // skip if stream.
@@ -29,21 +42,49 @@ function pcache(name) {
       return callback();
     }
 
+    var isMiss = false;
+    getDependencies(file.path, file.contents).forEach(function(dep) {
+      if (caches[name][dep.path] === dep.hash) {
+        return;
+      }
+      caches[name][dep.path] = dep.hash;
 
-    // hit!.
-    const hash = crypto.createHash('md5').update(file.contents.toString('utf8')).digest('hex');
-    if (caches[name][file.path] === hash) {
-      return callback();
+      isMiss = true;
+    });
+
+    if (isMiss) {
+      this.push(file);
     }
-
-    // miss!
-    caches[name][file.path] = hash;
-
-    this.push(file);
 
     callback();
   });
-};
+
+  /**
+   * @param {String} path
+   * @param {String|Buffer} contents
+   * @return {Array.<String, String>}
+   */
+  function getDependencies(path, contents) {
+    const deps = [{path: path, hash: hash(contents)}];
+    for (const dep of opts.deps) {
+      if (dep.test.test(path)) {
+        deps.push({
+          path: dep.path,
+          hash: hash(fs.readFileSync(dep.path))
+        });
+      }
+    }
+    return deps;
+  }
+
+  /**
+   * @param {String|Buffer} contents
+   * @return {String}
+   */
+  function hash(contents) {
+    return crypto.createHash('md5').update(contents.toString('utf8')).digest('hex');
+  }
+}
 
 pcache.path = function() {
   return option.path;
