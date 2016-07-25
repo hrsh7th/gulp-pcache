@@ -1,6 +1,6 @@
 {
   "name": "gulp-pcache",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "gulp incremental build on each process.",
   "main": "index.js",
   "dependencies": {
