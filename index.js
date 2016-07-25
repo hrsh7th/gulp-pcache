@@ -1,4 +1,5 @@
 const fs = require('fs');
+const glob = require('glob');
 const crypto = require('crypto');
 const defaults = require('lodash.defaults');
 const through = require('through2');
@@ -60,18 +61,23 @@ function pcache(name, opts) {
   });
 
   /**
-   * @param {String} path
+   * @param {String} targetPath
    * @param {String|Buffer} contents
    * @return {Array.<String, String>}
    */
-  function getDependencies(path, contents) {
-    const deps = [{path: path, hash: hash(contents)}];
+  function getDependencies(targetPath, contents) {
+    const deps = [{path: targetPath, hash: hash(contents)}];
     for (const dep of opts.deps) {
-      if (dep.test.test(path)) {
-        deps.push({
-          path: dep.path,
-          hash: hash(fs.readFileSync(dep.path))
-        });
+      // is matching option dependencies?
+      if (dep.test.test(targetPath)) {
+
+        // add dependencies from glob pattern.
+        for (const depPath of glob.sync(dep.glob)) {
+          deps.push({
+            path: depPath,
+            hash: hash(fs.readFileSync(depPath))
+          });
+        }
       }
     }
     return deps;

@@ -15,7 +15,8 @@ describe('gulp-pcache', function() {
 
   beforeEach(function() {
     pcache.clear();
-    fs.writeFileSync(__dirname + '/fixture/deps.js', Date.now());
+    fs.writeFileSync(__dirname + '/fixture/deps1.js', Date.now());
+    fs.writeFileSync(__dirname + '/fixture/deps2.js', Date.now());
   });
 
   it('should check cache hit/miss.', function(done) {
@@ -78,19 +79,19 @@ describe('gulp-pcache', function() {
     const stream1 = pcache('test3', {
       deps: [{
         test: /\.js$/,
-        path: __dirname + '/fixture/deps.js'
+        glob: __dirname + '/fixture/*.js'
       }]
     });
     const stream2 = pcache('test3', {
       deps: [{
         test: /\.js$/,
-        path: __dirname + '/fixture/deps.js'
+        glob: __dirname + '/fixture/*.js'
       }]
     });
     const stream3 = pcache('test3', {
       deps: [{
         test: /\.js$/,
-        path: __dirname + '/fixture/deps.js'
+        glob: __dirname + '/fixture/*.js'
       }]
     });
 
@@ -116,7 +117,7 @@ describe('gulp-pcache', function() {
           assert(count.value3 === 1);
           done();
         });
-        fs.writeFileSync(__dirname + '/fixture/deps.js', Date.now() + '1');
+        fs.writeFileSync(__dirname + '/fixture/deps1.js', Date.now());
         stream3.write(fileA);
         stream3.write(fileA);
         stream3.end();
