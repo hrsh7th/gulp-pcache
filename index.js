@@ -38,7 +38,7 @@ function pcache(name, opts) {
   return through.obj(function(file, enc, callback) {
 
     // skip if stream.
-    if (file.isStream()) {
+    if (file.isStream() || !file.contents) {
       this.push(file);
       return callback();
     }
