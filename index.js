@@ -3,6 +3,7 @@ var glob = require('glob');
 var crypto = require('crypto');
 var defaults = require('lodash.defaults');
 var through = require('through2');
+var colors = require('colors/safe');
 
 var caches;
 var option;
@@ -12,7 +13,10 @@ var option;
  * @return {Function}
  */
 module.exports = function(opts) {
-  option = defaults(opts || {}, {path: '.gulpcache'});
+  option = defaults(opts || {}, {
+    path: '.gulpcache',
+    verbose: false
+  });
 
   try {
     caches = JSON.parse(fs.readFileSync(opts.path));
@@ -35,6 +39,7 @@ function pcache(name, opts) {
   caches[name] = caches[name] || {};
 
   // return Strema.
+  var isAllCached = true;
   return through.obj(function(file, enc, callback) {
 
     // skip if stream.
@@ -54,9 +59,18 @@ function pcache(name, opts) {
     });
 
     if (isMiss) {
+      isAllCached = false;
       this.push(file);
     }
 
+    callback();
+  }, function(callback) {
+    if (isAllCached && option.verbose) {
+      console.log('%s: cached all files', colors.underline.yellow(name));
+    }
+
+    // reset default value.
+    isAllCached = true;
     callback();
   });
 

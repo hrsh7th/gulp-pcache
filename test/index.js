@@ -3,7 +3,10 @@
 
 const fs = require('fs');
 const assert = require('assert');
-const pcache = require('./../')({path: __dirname + '/.testcache'});
+const pcache = require('./../')({
+  path: __dirname + '/.testcache',
+  verbose: true
+});
 const File = require('vinyl');
 const PassThrough = require('stream').PassThrough;
 
